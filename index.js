@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 // const fs = require("fs");
 
-// TODO: Make websiteUrl configurable in a .config file
+// TODO: Make websiteUrl configurable in a .config file or .env
 const websiteUrl = "https://shopusa.fujifilm-x.com/products/0-74101-20684-5";
 const scrapedItem = {
   name: "",
@@ -29,7 +29,7 @@ const run = async () => {
   const setItemName = (scrapedItem.name = itemNameArray[0]);
 
   // scrape the given websiteUrl for item info (sku, price)
-  const inStockInfo = await page.$$eval(
+  const skuPriceInfo = await page.$$eval(
     ".pdp-buy-now-sect [data-price]",
     (attributes) =>
       attributes.map((e) => ({
@@ -39,7 +39,7 @@ const run = async () => {
   );
 
   // populate scrapedItem with data scraped from the websiteUrl
-  const setItemInfo = await inStockInfo.map((attribute) => {
+  const setItemInfo = await skuPriceInfo.map((attribute) => {
     scrapedItem.sku = attribute.sku;
     scrapedItem.price = attribute.price;
   });
