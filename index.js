@@ -1,15 +1,9 @@
-import * as dotenv from "dotenv";
-import puppeteer from "puppeteer";
-import fetch from "node-fetch";
-import express from "express";
+const dotenv = require("dotenv");
+const puppeteer = require("puppeteer");
+const express = require("express");
+const { sendSlackMessage } = require("./api/slack");
 
 dotenv.config();
-
-import { WebClient } from "@slack/web-api";
-
-const slackChannel = process.env.SLACK_CHANNEL;
-const slackToken = process.env.SLACK_TOKEN;
-const slackClient = new WebClient(slackToken);
 
 // server
 const app = express();
@@ -17,7 +11,7 @@ const port = 6969;
 
 app.use(express.json());
 app.listen(port, () => {
-  console.log(`Running on ${port}`);
+  console.log(`Running on port ${port}`);
 });
 
 // TODO: Make websiteUrl configurable in a .config file or .env
@@ -47,8 +41,6 @@ const run = async () => {
         (e) => e.innerText
       )[0]
   );
-  // TODO: Refine how we get and set info for scrapedItem
-  // const setItemName = (scrapedItem.name = itemName[0]);
 
   // scrape the given websiteUrl for item info (sku, price)
   const itemSkuPrice = await page.$$eval(
@@ -69,80 +61,9 @@ const run = async () => {
     console.log(scrapedItem);
   });
 
-  (async () => {
-    try {
-      // Post a message to the channel, and await the result.
-      // Find more arguments and details of the response: https://api.slack.com/methods/chat.postMessage
-      // const result = await slackClient.chat.postMessage({
-      //   text: "Hello world!",
-      //   channel: slackChannel,
-      // });
-      // call sendSlackMessage function with scrapedItem as argument
-      // await sendSlackMessage(scrapedItem);
-
-      await slackClient.chat.postMessage(
-        {
-          channel: slackChannel,
-          text: "@here Your item is in stock!",
-          blocks: [
-            {
-              type: "section",
-              text: {
-                type: "mrkdwn",
-                text: `@here ${scrapedItem.productName} is IN STOCK!`,
-              },
-              fields: [
-                {
-                  type: "mrkdwn",
-                  text: `*SKU*: ${scrapedItem.sku}`,
-                },
-                {
-                  type: "mrkdwn",
-                  text: `*Website*\n${scrapedItem.location}`,
-                },
-                {
-                  type: "mrkdwn",
-                  text: `*Price*\n${scrapedItem.price}`,
-                },
-              ],
-            },
-          ],
-        },
-
-        // The result contains an identifier for the message, `ts`.
-        console.log(`Sent in stock item info to ${slackChannel}`)
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  })();
   if (isAvailable) {
-    console.log("item is available my dude");
+    await sendSlackMessage(scrapedItem);
   }
-
-  // TODO: Create REST API server with express and nodemon
-  // !!! Can we simply post to a slack url that is not a webhook? !!!
-
-  // const sendNotification = async (scrapedItem) => {
-  //   console.log("api running");
-  //   try {
-  //     console.log("trying");
-  //     // call sendSlackMessage function with scrapedItem as argument
-  //     await sendSlackMessage(scrapedItem);
-  //     console.log("Successfully sent Slack message");
-  //   } catch (err) {
-  //     console.error("Unable to send Slack message:", err);
-  //   }
-  //   return;
-  // };
-
-  // app.post("/api/slack.js", sendNotification(scrapedItem));
-
-  // isAvailable
-  //   ? console.log("Slack API call here")
-  //   : console.log("Not in stock");
-
-  // TODO: Send scrapedItem to Slack insead of logging.
 
   await browser.close();
 };
