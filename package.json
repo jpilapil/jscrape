@@ -1,15 +1,19 @@
 {
+  "type": "module",
   "name": "jscrape",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@slack/web-api": "^6.8.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.0",
     "puppeteer": "^19.7.2"
   }
 }
