@@ -26,7 +26,6 @@ const jscrape = async () => {
   // Open a new page
   const page = await browser.newPage();
   // await page.setDefaultNavigationTimeout(0);
-
   // Navigate to website
   await page
     .goto(websiteUrl, {
@@ -35,14 +34,10 @@ const jscrape = async () => {
     .catch((err) => console.log("error loading url", err));
 
   // Scrape the given websiteUrl for itemName
-  // - returns an array
-  const itemName = await page.evaluate(
-    () =>
-      Array.from(
-        (itemName = document.querySelectorAll("h1.pdp-product-title")),
-        (e) => e.innerText
-      )[0]
-  );
+  const itemName = await page.evaluate(() => {
+    const itemNameElement = document.querySelector("h1.pdp-product-title");
+    return itemNameElement ? itemNameElement.innerText : null;
+  });
 
   // Scrape the given websiteUrl for item info (sku, price)
   const itemSkuPrice = await page.$$eval(
@@ -64,6 +59,7 @@ const jscrape = async () => {
       console.log(scrapedItem);
     })
   );
+
   isAvailable
     ? await sendSlackMessage(scrapedItem)
     : console.log("Not in-stock. Retrying...");
