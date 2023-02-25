@@ -1,18 +1,8 @@
 const dotenv = require("dotenv");
 const puppeteer = require("puppeteer");
-const express = require("express");
 const { sendSlackMessage } = require("./api/slack");
 
 dotenv.config();
-
-// server
-const app = express();
-const port = 6969;
-
-app.use(express.json());
-app.listen(port, () => {
-  console.log(`Running on port ${port}`);
-});
 
 // TODO: Make websiteUrl configurable in a .config file or .env
 const websiteUrl = "https://shopusa.fujifilm-x.com/products/0-74101-20684-5";
