@@ -5,6 +5,7 @@ dotenv.config();
 
 const slackChannel = process.env.SLACK_CHANNEL;
 const slackToken = process.env.SLACK_TOKEN;
+// Connects to client address
 const slackClient = new WebClient(slackToken);
 
 const sendSlackMessage = async (scrapedItem) => {
@@ -39,7 +40,7 @@ const sendSlackMessage = async (scrapedItem) => {
       },
 
       // The result contains an identifier for the message, `ts`.
-      console.log(`Item is IN-STOCK!!!\n\nSent info to ${slackChannel}`)
+      console.log(`Item is IN-STOCK!!!\nSent info to ${slackChannel}\n\n`)
     );
   } catch (error) {
     console.log(error);

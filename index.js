@@ -5,7 +5,7 @@ const { sendSlackMessage } = require("./api/slack");
 dotenv.config();
 
 // TODO: Make websiteUrl configurable in a .config file or .env
-const websiteUrl = "https://shopusa.fujifilm-x.com/products/0-74101-20684-5";
+const websiteUrl = "https://shopusa.fujifilm-x.com/products/0-74101-20124-6";
 const scrapedItem = {
   sku: "",
   productName: "",
@@ -17,13 +17,16 @@ let isAvailable = false;
 
 const run = async () => {
   console.log("Scraping...");
+  // Launch a browser
   const browser = await puppeteer.launch();
+  // Open a new page
   const page = await browser.newPage();
-
+  await page.setDefaultNavigationTimeout(0);
+  // Navigate to website
   await page.goto(websiteUrl);
 
-  // scrape the given websiteUrl for itemName
-  // returns an array
+  // Scrape the given websiteUrl for itemName
+  // - returns an array
   const itemName = await page.evaluate(
     () =>
       Array.from(
@@ -32,7 +35,7 @@ const run = async () => {
       )[0]
   );
 
-  // scrape the given websiteUrl for item info (sku, price)
+  // Scrape the given websiteUrl for item info (sku, price)
   const itemSkuPrice = await page.$$eval(
     ".pdp-buy-now-sect [data-price]",
     (attributes) =>
@@ -42,7 +45,7 @@ const run = async () => {
       }))
   );
 
-  // populate scrapedItem with data scraped from the websiteUrl
+  // Populate scrapedItem with data scraped from the websiteUrl
   const setItemInfo = await itemSkuPrice.map((attribute) => {
     scrapedItem.sku = attribute.sku;
     scrapedItem.productName = itemName;
@@ -51,18 +54,18 @@ const run = async () => {
     console.log(scrapedItem);
   });
 
-  if (isAvailable) {
-    await sendSlackMessage(scrapedItem);
-  }
+  isAvailable
+    ? await sendSlackMessage(scrapedItem)
+    : console.log("Not in-stock. Retrying...");
 
   await browser.close();
 };
 
-// initialize app
+// Initialize app
 
 const init = async () => {
   console.log("Initializing");
-  return setInterval(run, 10000);
+  setInterval(run, 10000);
 };
 
 init();
