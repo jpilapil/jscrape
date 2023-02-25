@@ -16,6 +16,7 @@ const port = 6969;
 app.use(express.json());
 app.listen(port, () => {
   console.log(`Running on ${port}`);
+  console.log(slackToken);
 });
 
 // TODO: Make websiteUrl configurable in a .config file or .env
@@ -67,8 +68,8 @@ const run = async () => {
     console.log(scrapedItem);
   });
 
-  if (isAvailable) {
-    (async () => {
+  (async () => {
+    try {
       // Post a message to the channel, and await the result.
       // Find more arguments and details of the response: https://api.slack.com/methods/chat.postMessage
       const result = await slackClient.chat.postMessage({
@@ -80,7 +81,12 @@ const run = async () => {
       console.log(
         `Successfully send message ${result.ts} in conversation ${slackChannel}`
       );
-    })();
+    } catch (error) {
+      console.log(error);
+    }
+  })();
+  if (isAvailable) {
+    console.log("item is available my dude");
   }
 
   // TODO: Create REST API server with express and nodemon
