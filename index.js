@@ -4,26 +4,35 @@ const { sendSlackMessage } = require("./api/slack");
 
 dotenv.config();
 
+const itemUrl = process.env.ITEM_URL;
+
 // TODO: Make websiteUrl configurable in a .config file or .env
-const websiteUrl = "https://shopusa.fujifilm-x.com/products/0-74101-20124-6";
+const websiteUrl = itemUrl;
 const scrapedItem = {
-  sku: "",
-  productName: "",
+  // sku: "",
+  // productName: "",
   location: websiteUrl,
-  price: "",
+  // price: "",
 };
 
 let isAvailable = false;
 
-const run = async () => {
+const jscrape = async () => {
+  // TODO: Create feature that allows multiple browsers to scrape different URLS - Could this be one with tab instead?
+
   console.log("Scraping...");
   // Launch a browser
   const browser = await puppeteer.launch();
   // Open a new page
   const page = await browser.newPage();
-  await page.setDefaultNavigationTimeout(0);
+  // await page.setDefaultNavigationTimeout(0);
+
   // Navigate to website
-  await page.goto(websiteUrl);
+  await page
+    .goto(websiteUrl, {
+      waitUntil: "domcontentloaded",
+    })
+    .catch((err) => console.log("error loading url", err));
 
   // Scrape the given websiteUrl for itemName
   // - returns an array
@@ -46,14 +55,15 @@ const run = async () => {
   );
 
   // Populate scrapedItem with data scraped from the websiteUrl
-  const setItemInfo = await itemSkuPrice.map((attribute) => {
-    scrapedItem.sku = attribute.sku;
-    scrapedItem.productName = itemName;
-    scrapedItem.price = attribute.price;
-    isAvailable = true;
-    console.log(scrapedItem);
-  });
-
+  await Promise.all(
+    itemSkuPrice.map(async (attribute) => {
+      scrapedItem.sku = attribute.sku;
+      scrapedItem.productName = itemName;
+      scrapedItem.price = attribute.price;
+      isAvailable = true;
+      console.log(scrapedItem);
+    })
+  );
   isAvailable
     ? await sendSlackMessage(scrapedItem)
     : console.log("Not in-stock. Retrying...");
@@ -65,7 +75,7 @@ const run = async () => {
 
 const init = async () => {
   console.log("Initializing");
-  setInterval(run, 10000);
+  setInterval(jscrape, 5000);
 };
 
 init();

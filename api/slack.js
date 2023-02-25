@@ -19,7 +19,7 @@ const sendSlackMessage = async (scrapedItem) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `@here ${scrapedItem.productName} is IN STOCK!`,
+              text: `@here\n*${scrapedItem.productName} is IN STOCK!!!*`,
             },
             fields: [
               {
