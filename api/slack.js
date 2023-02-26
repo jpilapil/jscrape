@@ -1,6 +1,5 @@
 const dotenv = require("dotenv");
 const { WebClient } = require("@slack/web-api");
-
 dotenv.config();
 
 const slackChannel = process.env.SLACK_CHANNEL;
