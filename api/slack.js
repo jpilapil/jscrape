@@ -6,8 +6,25 @@ const slackChannel = process.env.SLACK_CHANNEL;
 const slackToken = process.env.SLACK_TOKEN;
 // Connects to client address
 const slackClient = new WebClient(slackToken);
+const channelName = "jscrape";
+const channelId = "C04QTDNUR8V";
 
+// try {
+//   // Call the conversations.history method using WebClient
+//   const result = await client.conversations.history({
+//     channel: channelId
+//   });
+
+//   conversationHistory = result.messages;
+
+//   // Print results
+//   console.log(conversationHistory.length + " messages found in " + channelId);
+// }
+// catch (error) {
+//   console.error(error);
+// }
 const sendSlackMessage = async (scrapedItem) => {
+  // await findConversation(slackChannel);
   try {
     await slackClient.chat.postMessage(
       {

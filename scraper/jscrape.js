@@ -23,13 +23,37 @@ const jscrape = async () => {
   const browser = await puppeteer.launch();
   // Open a new page
   const page = await browser.newPage();
-  // await page.setDefaultNavigationTimeout(0);
-  // Navigate to website
-  await page
-    .goto(websiteUrl, {
-      waitUntil: "domcontentloaded",
-    })
-    .catch((err) => console.log("error loading url", err));
+  // // Navigate to website
+  // await page
+  //   .goto(websiteUrl, {
+  //     waitUntil: "domcontentloaded",
+  //   })
+  //   .catch((err) => console.log("error loading url", err));
+
+  // Set a longer timeout value for page navigation
+  await page.setDefaultNavigationTimeout(30000);
+
+  let isNavigationSuccessful = false;
+  while (!isNavigationSuccessful) {
+    try {
+      // Navigate to website
+      await page.goto(websiteUrl, {
+        waitUntil: "domcontentloaded",
+      });
+      isNavigationSuccessful = true;
+    } catch (err) {
+      // If a TimeoutError occurs, wait for 5 seconds and try again
+      if (err.name === "TimeoutError") {
+        console.log("Navigation timeout occurred. Retrying in 5 seconds...");
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      } else {
+        // If the error is not a TimeoutError, log it and exit the function
+        console.log("Error occurred while navigating to website:", err);
+        await browser.close();
+        return;
+      }
+    }
+  }
 
   // Scrape the given websiteUrl for itemName
   const itemName = await page.evaluate(() => {
@@ -60,7 +84,7 @@ const jscrape = async () => {
 
   isAvailable
     ? await sendSlackMessage(scrapedItem)
-    : console.log("Not in-stock. Retrying...");
+    : console.log("Not in-stock");
 
   await browser.close();
 };
