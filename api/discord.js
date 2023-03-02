@@ -29,11 +29,13 @@ const sendDiscordMessage = (item) => {
     // Get the channel we want to interact with
     const channel = client.channels.cache.get(channelId);
 
-    channel.send(`*@here*\n
+    channel.send(
+      `*@here*\n
       **${item.productName} is in STOCK!!!**\n
       Website: ${item.location}\n
       SKU: ${item.sku}\n
-      Price: $${item.price}\n`);
+      Price: $${item.price}\n`
+    );
   });
 
   // Log in to Discord with your client's token
