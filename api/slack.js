@@ -23,7 +23,7 @@ const channelId = "C04QTDNUR8V";
 // catch (error) {
 //   console.error(error);
 // }
-const sendSlackMessage = async (scrapedItem) => {
+const sendSlackMessage = async (item) => {
   // await findConversation(slackChannel);
   try {
     await slackClient.chat.postMessage(
@@ -35,20 +35,20 @@ const sendSlackMessage = async (scrapedItem) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `@here\n*${scrapedItem.productName} is IN STOCK!!!*`,
+              text: `@here\n*${item.productName} is IN STOCK!!!*`,
             },
             fields: [
               {
                 type: "mrkdwn",
-                text: `*SKU*: ${scrapedItem.sku}`,
+                text: `*SKU*: ${item.sku}`,
               },
               {
                 type: "mrkdwn",
-                text: `*Website*\n${scrapedItem.location}`,
+                text: `*Website*\n${item.location}`,
               },
               {
                 type: "mrkdwn",
-                text: `*Price*\n${scrapedItem.price}`,
+                text: `*Price*\n${item.price}`,
               },
             ],
           },
