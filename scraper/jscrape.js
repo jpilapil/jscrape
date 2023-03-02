@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 const puppeteer = require("puppeteer");
 const { sendSlackMessage } = require("../api/slack");
+const { sendDiscordMessage } = require("../api/discord");
 dotenv.config();
 
 const itemUrl = process.env.ITEM_URL;
@@ -76,7 +77,7 @@ const jscrape = async () => {
   );
 
   isAvailable
-    ? await sendSlackMessage(scrapedItem)
+    ? await sendDiscordMessage(scrapedItem)
     : console.log("Not in-stock");
 
   await browser.close();
