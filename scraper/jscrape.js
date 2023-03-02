@@ -23,13 +23,6 @@ const jscrape = async () => {
   const browser = await puppeteer.launch();
   // Open a new page
   const page = await browser.newPage();
-  // // Navigate to website
-  // await page
-  //   .goto(websiteUrl, {
-  //     waitUntil: "domcontentloaded",
-  //   })
-  //   .catch((err) => console.log("error loading url", err));
-
   // Set a longer timeout value for page navigation
   await page.setDefaultNavigationTimeout(30000);
 
