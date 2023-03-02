@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 const puppeteer = require("puppeteer");
-const { sendSlackMessage } = require("../api/slack");
+// const { sendSlackMessage } = require("../api/slack");
 const { sendDiscordMessage } = require("../api/discord");
 dotenv.config();
 
