@@ -34,10 +34,21 @@ const sendDiscordMessage = (item) => {
       **${item.productName} is in STOCK!!!**\n
       Website: ${item.location}\n
       SKU: ${item.sku}\n
-      Price: $${item.price}\n`
+      Price: $${item.price}\n
+      \n
+      🛑 TO STOP`
     );
   });
 
+  client.on("messageReactionAdd", async (reaction, user) => {
+    // Check if the reaction is the stop emoji and the user is not a bot
+    if (reaction.emoji.name === "🛑" && !user.bot) {
+      console.log("jscrape terminated from Discord.");
+      // Log out of Discord and terminate the application
+      await client.destroy();
+      process.exit();
+    }
+  });
   // Log in to Discord with your client's token
   client.login(token);
 };
